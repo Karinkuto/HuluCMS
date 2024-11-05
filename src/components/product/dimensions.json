@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_product_dimensions",
+  "info": {
+    "displayName": "Product Dimensions",
+    "description": "Product dimensions with flexible measurements"
+  },
+  "options": {},
+  "attributes": {
+    "measurements": {
+      "type": "json",
+      "required": true,
+      "description": "Dimensions in format: {length, width, height}"
+    },
+    "volume": {
+      "type": "decimal",
+      "min": 0,
+      "private": true
+    },
+    "dimensionUnit": {
+      "type": "enumeration",
+      "enum": ["cm", "in", "mm", "m"],
+      "default": "cm"
+    },
+    "volumeUnit": {
+      "type": "enumeration",
+      "enum": ["cm3", "in3", "m3"],
+      "default": "cm3"
+    },
+    "customMeasurements": {
+      "type": "json",
+      "description": "Additional custom measurements if needed"
+    }
+  }
+} 

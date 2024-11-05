@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "carts",
+  "info": {
+    "singularName": "cart",
+    "pluralName": "carts",
+    "displayName": "Shopping Cart",
+    "description": "User shopping carts"
+  },
+  "options": {
+    "timestamps": true
+  },
+  "attributes": {
+    "customer": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::shopper.shopper"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["active", "converted", "abandoned"],
+      "default": "active",
+      "required": true
+    },
+    "items": {
+      "type": "component",
+      "component": "cart.cart-item",
+      "repeatable": true
+    },
+    "expiresAt": {
+      "type": "datetime"
+    },
+    "sessionId": {
+      "type": "string"
+    }
+  }
+} 

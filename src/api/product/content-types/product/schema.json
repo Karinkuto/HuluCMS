@@ -5,63 +5,55 @@
     "singularName": "product",
     "pluralName": "products",
     "displayName": "Product",
-    "description": ""
+    "description": "Product catalog items"
   },
   "options": {
     "draftAndPublish": true
   },
-  "pluginOptions": {},
   "attributes": {
     "name": {
-      "type": "string"
-    },
-    "available": {
-      "type": "boolean"
-    },
-    "image": {
-      "type": "media",
-      "multiple": true,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files"
-      ]
+      "type": "string",
+      "required": true
     },
     "description": {
       "type": "blocks"
     },
     "category": {
       "type": "enumeration",
-      "enum": [
-        "Mens",
-        "Womens",
-        "Electronics"
-      ]
+      "enum": ["Mens", "Womens", "Electronics"]
     },
-    "size": {
-      "type": "enumeration",
-      "enum": [
-        "XS",
-        "SM",
-        "MD",
-        "LG",
-        "XL"
-      ]
+    "basePrice": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
     },
-    "material": {
-      "type": "string"
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
     },
-    "color": {
-      "type": "string"
-    },
-    "products": {
+    "variants": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::product.product"
+      "target": "api::variant.variant",
+      "mappedBy": "product"
     },
-    "price": {
-      "default": 0,
-      "type": "decimal"
+    "defaultVariant": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::variant.variant"
+    },
+    "brand": {
+      "type": "string"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
     }
   }
 }

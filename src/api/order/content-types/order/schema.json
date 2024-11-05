@@ -4,20 +4,78 @@
   "info": {
     "singularName": "order",
     "pluralName": "orders",
-    "displayName": "Order"
+    "displayName": "Order",
+    "description": "Customer orders"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false,
+    "timestamps": true
   },
-  "pluginOptions": {},
   "attributes": {
-    "products": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::product.product"
+    "orderNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
     },
-    "order_time": {
-      "type": "time"
+    "customer": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::shopper.shopper"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "processing", "shipped", "delivered", "cancelled"],
+      "default": "pending",
+      "required": true
+    },
+    "items": {
+      "type": "component",
+      "component": "order.order-item",
+      "repeatable": true,
+      "required": true,
+      "min": 1
+    },
+    "subtotal": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "tax": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "shipping": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "total": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "shippingAddress": {
+      "type": "component",
+      "component": "common.address",
+      "required": true
+    },
+    "billingAddress": {
+      "type": "component",
+      "component": "common.address",
+      "required": true
+    },
+    "trackingNumber": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": ["pending", "paid", "failed", "refunded"],
+      "default": "pending",
+      "required": true
     }
   }
 }

@@ -1,0 +1,77 @@
+{
+  "kind": "collectionType",
+  "collectionName": "variants",
+  "info": {
+    "singularName": "variant",
+    "pluralName": "variants",
+    "displayName": "Product Variant",
+    "description": "Product variants with stock management"
+  },
+  "options": {
+    "draftAndPublish": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "sku": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "minLength": 3
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "variants"
+    },
+    "stock": {
+      "type": "integer",
+      "min": 0,
+      "default": 0,
+      "required": true
+    },
+    "reserved": {
+      "type": "integer",
+      "min": 0,
+      "default": 0
+    },
+    "price": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": ["XS", "SM", "MD", "LG", "XL"]
+    },
+    "color": {
+      "type": "string"
+    },
+    "material": {
+      "type": "string"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+    "discount": {
+      "type": "component",
+      "component": "product.discount",
+      "repeatable": false
+    },
+    "dimensions": {
+      "type": "component",
+      "component": "product.dimensions",
+      "repeatable": false
+    },
+    "weight": {
+      "type": "decimal",
+      "min": 0
+    },
+    "isDefault": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+} 

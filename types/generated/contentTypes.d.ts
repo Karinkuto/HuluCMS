@@ -369,26 +369,119 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
-  collectionName: 'orders';
+export interface ApiCartCart extends Struct.CollectionTypeSchema {
+  collectionName: 'carts';
   info: {
-    displayName: 'Order';
-    pluralName: 'orders';
-    singularName: 'order';
+    description: 'User shopping carts';
+    displayName: 'Shopping Cart';
+    pluralName: 'carts';
+    singularName: 'cart';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
+    timestamps: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    customer: Schema.Attribute.Relation<'oneToOne', 'api::shopper.shopper'>;
+    expiresAt: Schema.Attribute.DateTime;
+    items: Schema.Attribute.Component<'cart.cart-item', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::cart.cart'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sessionId: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<['active', 'converted', 'abandoned']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'active'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
+  collectionName: 'orders';
+  info: {
+    description: 'Customer orders';
+    displayName: 'Order';
+    pluralName: 'orders';
+    singularName: 'order';
+  };
+  options: {
+    draftAndPublish: false;
+    timestamps: true;
+  };
+  attributes: {
+    billingAddress: Schema.Attribute.Component<'common.address', false> &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    customer: Schema.Attribute.Relation<'manyToOne', 'api::shopper.shopper'>;
+    items: Schema.Attribute.Component<'order.order-item', true> &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
-    order_time: Schema.Attribute.Time;
-    products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
+    notes: Schema.Attribute.Text;
+    orderNumber: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    paymentStatus: Schema.Attribute.Enumeration<
+      ['pending', 'paid', 'failed', 'refunded']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'pending'>;
     publishedAt: Schema.Attribute.DateTime;
+    shipping: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    shippingAddress: Schema.Attribute.Component<'common.address', false> &
+      Schema.Attribute.Required;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'pending'>;
+    subtotal: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    tax: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    total: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    trackingNumber: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -398,7 +491,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
-    description: '';
+    description: 'Product catalog items';
     displayName: 'Product';
     pluralName: 'products';
     singularName: 'product';
@@ -407,29 +500,39 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    available: Schema.Attribute.Boolean;
+    basePrice: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    brand: Schema.Attribute.String;
     category: Schema.Attribute.Enumeration<['Mens', 'Womens', 'Electronics']>;
-    color: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    defaultVariant: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::variant.variant'
+    >;
     description: Schema.Attribute.Blocks;
-    image: Schema.Attribute.Media<'images' | 'files', true>;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    images: Schema.Attribute.Media<'images', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::product.product'
     > &
       Schema.Attribute.Private;
-    material: Schema.Attribute.String;
-    name: Schema.Attribute.String;
-    price: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
-    products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    size: Schema.Attribute.Enumeration<['XS', 'SM', 'MD', 'LG', 'XL']>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    variants: Schema.Attribute.Relation<'oneToMany', 'api::variant.variant'>;
   };
 }
 
@@ -462,6 +565,81 @@ export interface ApiShopperShopper extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     username: Schema.Attribute.String;
+  };
+}
+
+export interface ApiVariantVariant extends Struct.CollectionTypeSchema {
+  collectionName: 'variants';
+  info: {
+    description: 'Product variants with stock management';
+    displayName: 'Product Variant';
+    pluralName: 'variants';
+    singularName: 'variant';
+  };
+  options: {
+    draftAndPublish: true;
+    timestamps: true;
+  };
+  attributes: {
+    color: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    dimensions: Schema.Attribute.Component<'product.dimensions', false>;
+    discount: Schema.Attribute.Component<'product.discount', false>;
+    images: Schema.Attribute.Media<'images', true>;
+    isDefault: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::variant.variant'
+    > &
+      Schema.Attribute.Private;
+    material: Schema.Attribute.String;
+    price: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    reserved: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    size: Schema.Attribute.Enumeration<['XS', 'SM', 'MD', 'LG', 'XL']>;
+    sku: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 3;
+      }>;
+    stock: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    weight: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
   };
 }
 
@@ -970,9 +1148,11 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::cart.cart': ApiCartCart;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
       'api::shopper.shopper': ApiShopperShopper;
+      'api::variant.variant': ApiVariantVariant;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_order_order_items",
+  "info": {
+    "displayName": "Order Item",
+    "description": "Individual items within an order"
+  },
+  "options": {},
+  "attributes": {
+    "variant": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::variant.variant"
+    },
+    "quantity": {
+      "type": "integer",
+      "min": 1,
+      "required": true
+    },
+    "priceAtTime": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    }
+  }
+} 
