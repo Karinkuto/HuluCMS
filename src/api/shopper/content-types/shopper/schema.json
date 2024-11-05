@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shoppers",
+  "info": {
+    "singularName": "shopper",
+    "pluralName": "shoppers",
+    "displayName": "Shopper"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "biginteger"
+    },
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "password"
+    }
+  }
+}
